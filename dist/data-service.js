@@ -1,4 +1,4 @@
-const STORAGE_KEY = "fiadito-demo-v1";
+const STORAGE_KEY = "fiadito-demo-v2";
 
 export const categories = ["Todos", "Bebidas", "Abarrotes", "Snacks", "Lácteos", "Limpieza"];
 
