@@ -1,4 +1,4 @@
-import { LocalStore, categories } from "./data-service.js";
+import { LocalStore, categories } from "./data-service.js?v=2.1";
 
 const store = new LocalStore();
 const app = document.querySelector("#app");
