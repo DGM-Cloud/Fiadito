@@ -38,7 +38,7 @@ function announce(message) {
 function toast(message) {
   document.querySelector(".toast")?.remove();
   const element = document.createElement("div");
-  element.className = "toast";
+  element.className = `toast${state.route === "sale" && state.cart.length ? " toast-above-ticket" : ""}`;
   element.innerHTML = `${icons.check}<span>${escapeHTML(message)}</span>`;
   document.body.append(element);
   announce(message);
@@ -177,7 +177,7 @@ function saleView() {
         <div class="search-box">${icons.search}<input type="search" id="sale-search" value="${escapeHTML(state.query)}" placeholder="Buscar un producto" aria-label="Buscar producto para vender" /></div>
         <div class="filter-scroll" aria-label="Filtrar por categoría">${categories.map(category => `<button class="filter-chip ${state.category === category ? "active" : ""}" data-category="${category}">${category}</button>`).join("")}</div>
         ${products.length ? `<div class="product-grid">${products.map(product => `<button class="product-card" data-add="${product.id}" style="--card-color:${product.color}" ${product.stock === 0 ? "disabled" : ""}><span><span class="product-emoji">${product.emoji}</span><strong>${escapeHTML(product.short)}</strong><small>${product.unit}<br>${product.stock === 0 ? "Agotado" : `${product.stock} disponibles`}</small></span><span class="product-price">${money(product.price)}<span class="add-dot">+</span></span></button>`).join("")}</div>` : `<div class="empty-state"><div class="empty-icon">🔎</div><h2>No encontramos ese producto</h2><p>Prueba con otro nombre o cambia la categoría.</p><button class="btn btn-secondary" data-action="clear-search">Limpiar búsqueda</button></div>`}
-        ${state.cart.length ? `<button class="mobile-ticket-bar" data-action="checkout"><span><strong>Ver mi venta</strong><small>${count} ${count === 1 ? "producto" : "productos"}</small></span><strong>${money(total)}</strong></button>` : ""}
+        ${state.cart.length ? `<button class="mobile-ticket-bar" data-action="checkout"><span class="mobile-ticket-copy"><strong>Ver mi venta</strong><small>${count} ${count === 1 ? "producto" : "productos"}</small></span><strong class="mobile-ticket-total">${money(total)}</strong></button>` : ""}
       </section>
       <aside class="ticket-panel" aria-label="Venta actual">
         <div class="ticket-top"><p class="eyebrow">Ticket abierto</p><h2>Mi venta</h2></div>
