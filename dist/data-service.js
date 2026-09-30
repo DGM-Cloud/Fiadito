@@ -24,13 +24,17 @@ const seedSales = [
 ];
 
 function initialState() {
-  return { products: structuredClone(seedProducts), sales: structuredClone(seedSales), user: null };
+  return { products: structuredClone(seedProducts), sales: structuredClone(seedSales), cashClosings: [], user: null };
 }
 
 export class LocalStore {
   constructor() { this.state = this.load(); }
   load() {
-    try { return JSON.parse(localStorage.getItem(STORAGE_KEY)) || initialState(); }
+    try {
+      const saved = JSON.parse(localStorage.getItem(STORAGE_KEY));
+      if (!saved) return initialState();
+      return { ...initialState(), ...saved, cashClosings: saved.cashClosings || [] };
+    }
     catch { return initialState(); }
   }
   save() { localStorage.setItem(STORAGE_KEY, JSON.stringify(this.state)); }
@@ -38,6 +42,23 @@ export class LocalStore {
   logout() { this.state.user = null; this.save(); }
   getProducts() { return this.state.products; }
   getSales() { return [...this.state.sales].sort((a, b) => new Date(b.createdAt) - new Date(a.createdAt)); }
+  getCashClosing(date) { return this.state.cashClosings.find(closing => closing.date === date) || null; }
+  saveCashClosing(closing) {
+    const normalized = {
+      ...closing,
+      openingCash: Number(closing.openingCash),
+      cashSales: Number(closing.cashSales),
+      expectedCash: Number(closing.expectedCash),
+      countedCash: Number(closing.countedCash),
+      difference: Number(closing.difference),
+      savedAt: new Date().toISOString()
+    };
+    const index = this.state.cashClosings.findIndex(item => item.date === normalized.date);
+    if (index >= 0) this.state.cashClosings[index] = normalized;
+    else this.state.cashClosings.unshift(normalized);
+    this.save();
+    return normalized;
+  }
   saveProduct(product) {
     const normalized = { ...product, price: Number(product.price), stock: Number(product.stock), minStock: Number(product.minStock) };
     const index = this.state.products.findIndex(item => item.id === normalized.id);

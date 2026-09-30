@@ -3,6 +3,11 @@ import { LocalStore, categories } from "./data-service.js";
 const store = new LocalStore();
 const app = document.querySelector("#app");
 const liveRegion = document.querySelector("#live-region");
+const localDateKey = (value = new Date()) => {
+  const date = value instanceof Date ? value : new Date(value);
+  const pad = number => String(number).padStart(2, "0");
+  return `${date.getFullYear()}-${pad(date.getMonth() + 1)}-${pad(date.getDate())}`;
+};
 
 const state = {
   route: "home",
@@ -10,7 +15,8 @@ const state = {
   category: "Todos",
   cart: [],
   editProductId: null,
-  selectedMethod: "Efectivo"
+  selectedMethod: "Efectivo",
+  selectedDate: localDateKey()
 };
 
 const icons = {
@@ -22,12 +28,14 @@ const icons = {
   plus: `<svg class="icon" aria-hidden="true" viewBox="0 0 24 24"><path d="M12 5v14M5 12h14"/></svg>`,
   arrow: `<svg class="icon" aria-hidden="true" viewBox="0 0 24 24"><path d="m9 18 6-6-6-6"/></svg>`,
   check: `<svg class="icon" aria-hidden="true" viewBox="0 0 24 24"><path d="m5 12 4 4L19 6"/></svg>`,
+  print: `<svg class="icon" aria-hidden="true" viewBox="0 0 24 24"><path d="M7 9V3h10v6M7 18H5a2 2 0 0 1-2-2v-5a2 2 0 0 1 2-2h14a2 2 0 0 1 2 2v5a2 2 0 0 1-2 2h-2"/><path d="M7 14h10v7H7z"/></svg>`,
   logout: `<svg class="icon" aria-hidden="true" viewBox="0 0 24 24"><path d="M10 17l5-5-5-5M15 12H3M15 3h5v18h-5"/></svg>`
 };
 
 const money = value => new Intl.NumberFormat("es-PE", { style: "currency", currency: "PEN" }).format(value);
 const time = iso => new Intl.DateTimeFormat("es-PE", { hour: "numeric", minute: "2-digit" }).format(new Date(iso));
 const dateTime = iso => new Intl.DateTimeFormat("es-PE", { day: "numeric", month: "long", hour: "numeric", minute: "2-digit" }).format(new Date(iso));
+const friendlyDate = date => new Intl.DateTimeFormat("es-PE", { weekday: "long", day: "numeric", month: "long", year: "numeric" }).format(new Date(`${date}T12:00:00`));
 const escapeHTML = value => String(value).replace(/[&<>'"]/g, char => ({ "&": "&amp;", "<": "&lt;", ">": "&gt;", "'": "&#39;", '"': "&quot;" }[char]));
 
 function announce(message) {
@@ -167,8 +175,8 @@ function saleView() {
   const total = state.cart.reduce((sum, item) => sum + item.price * item.qty, 0);
   const ticket = state.cart.length ? state.cart.map(item => `
     <div class="ticket-item">
-      <div><strong>${escapeHTML(item.short)}</strong><small>${money(item.price)} c/u</small><div class="quantity"><button class="qty-button" data-cart="minus" data-id="${item.id}" aria-label="Quitar uno de ${escapeHTML(item.name)}">−</button><strong>${item.qty}</strong><button class="qty-button" data-cart="plus" data-id="${item.id}" aria-label="Agregar otro ${escapeHTML(item.name)}">+</button></div></div>
-      <strong>${money(item.price * item.qty)}</strong>
+      <div class="ticket-item-main"><strong>${escapeHTML(item.short)}</strong><small class="unit-price">Precio unitario: ${money(item.price)}</small><div class="quantity"><span class="quantity-label">Cantidad</span><button class="qty-button" data-cart="minus" data-id="${item.id}" aria-label="Quitar uno de ${escapeHTML(item.name)}">−</button><strong>${item.qty}</strong><button class="qty-button" data-cart="plus" data-id="${item.id}" aria-label="Agregar otro ${escapeHTML(item.name)}">+</button></div></div>
+      <strong class="ticket-line-total">${money(item.price * item.qty)}</strong>
     </div>`).join("") : `<div class="empty-state" style="border:0;background:none;padding:2rem .5rem"><div class="empty-icon">🧺</div><h2>Tu venta está vacía</h2><p>Toca un producto para agregarlo.</p></div>`;
   return `
     ${pageHead("Hacer una venta", "Toca cada producto que llevó la persona.")}
@@ -188,10 +196,33 @@ function saleView() {
 }
 
 function historyView() {
-  const sales = store.getSales().filter(sale => `${sale.id} ${sale.method} ${sale.items.map(i => i.name).join(" ")}`.toLowerCase().includes(state.query.toLowerCase()));
-  return `${pageHead("Ventas", "Consulta cada ticket y su forma de pago.", `<button class="btn btn-primary desktop-action" data-route="sale">${icons.plus} Nueva venta</button>`)}
+  const daySales = store.getSales().filter(sale => localDateKey(sale.createdAt) === state.selectedDate);
+  const sales = daySales.filter(sale => `${sale.id} ${sale.method} ${sale.items.map(i => i.name).join(" ")}`.toLowerCase().includes(state.query.toLowerCase()));
+  const totals = daySales.reduce((summary, sale) => {
+    summary.total += sale.total;
+    summary[sale.method] = (summary[sale.method] || 0) + sale.total;
+    return summary;
+  }, { total: 0, Efectivo: 0, Yape: 0, Plin: 0, Otro: 0 });
+  const digital = totals.Yape + totals.Plin + totals.Otro;
+  const closing = store.getCashClosing(state.selectedDate);
+  const isToday = state.selectedDate === localDateKey();
+  return `${pageHead("Ventas", "Revisa lo vendido por fecha y cuadra tu caja al terminar el día.", `<button class="btn btn-primary desktop-action" data-route="sale">${icons.plus} Nueva venta</button>`)}
+    <section class="day-toolbar" aria-label="Fecha de ventas"><div class="field"><label for="sales-date">Ventas del día</label><input type="date" id="sales-date" value="${state.selectedDate}" max="${localDateKey()}" /></div>${!isToday ? `<button class="btn btn-secondary" data-action="today-sales">Ver hoy</button>` : ""}</section>
+    <section class="daily-summary" aria-label="Resumen de ${friendlyDate(state.selectedDate)}">
+      <div class="summary-total"><small>Total vendido</small><strong>${money(totals.total)}</strong><span>${daySales.length} ${daySales.length === 1 ? "venta" : "ventas"}</span></div>
+      <div class="summary-method"><span>💵</span><small>Efectivo</small><strong>${money(totals.Efectivo)}</strong></div>
+      <div class="summary-method"><span>📱</span><small>Yape, Plin y otro</small><strong>${money(digital)}</strong></div>
+      <button class="cash-close-card" data-action="cash-closing" ${!daySales.length ? "disabled" : ""}><span><small>${closing ? "Cuadre guardado" : "Al cerrar el día"}</small><strong>${closing ? closingStatus(closing.difference) : "Cuadrar caja"}</strong></span><span class="cash-close-icon">${closing ? "✓" : "→"}</span></button>
+    </section>
+    ${closing ? `<div class="closing-note ${Math.abs(closing.difference) < .01 ? "is-balanced" : ""}"><span>${Math.abs(closing.difference) < .01 ? "✓" : "!"}</span><p><strong>${closingStatus(closing.difference)}</strong><small>Esperado ${money(closing.expectedCash)} · Contado ${money(closing.countedCash)}</small></p><button class="text-button" data-action="cash-closing">Revisar</button></div>` : ""}
+    <div class="section-title"><h2>Tickets del día</h2><span>${friendlyDate(state.selectedDate)}</span></div>
     <div class="search-box">${icons.search}<input type="search" id="history-search" value="${escapeHTML(state.query)}" placeholder="Buscar por producto, código o pago" aria-label="Buscar en ventas" /></div>
-    ${sales.length ? saleRows(sales) : `<div class="empty-state"><div class="empty-icon">🔎</div><h2>No encontramos ventas</h2><p>No hay tickets que coincidan con “${escapeHTML(state.query)}”.</p><button class="btn btn-secondary" data-action="clear-search">Limpiar búsqueda</button></div>`}`;
+    ${sales.length ? saleRows(sales) : daySales.length ? `<div class="empty-state"><div class="empty-icon">🔎</div><h2>No encontramos ese ticket</h2><p>No hay resultados para “${escapeHTML(state.query)}” en esta fecha.</p><button class="btn btn-secondary" data-action="clear-search">Limpiar búsqueda</button></div>` : `<div class="empty-state"><div class="empty-icon">🧾</div><h2>No hubo ventas este día</h2><p>Elige otra fecha o registra una nueva venta.</p>${isToday ? `<button class="btn btn-primary" data-route="sale">Hacer una venta</button>` : ""}</div>`}`;
+}
+
+function closingStatus(difference) {
+  if (Math.abs(difference) < .01) return "La caja cuadra";
+  return difference > 0 ? `Sobra ${money(difference)}` : `Falta ${money(Math.abs(difference))}`;
 }
 
 function productsView() {
@@ -283,10 +314,12 @@ function completeSale(dialog, total) {
 }
 
 function successDialog(sale) {
-  openDialog(`<div class="dialog-body success-content" style="padding-top:1.8rem"><div class="success-mark">✓</div><p class="eyebrow">Venta ${sale.id}</p><h2>¡Venta guardada!</h2><p>${money(sale.total)} · ${sale.method}</p>${sale.change > 0 ? `<div class="change-box"><span>Entrega de vuelto</span><strong>${money(sale.change)}</strong></div>` : ""}<div style="display:grid;gap:.6rem;margin-top:1.2rem"><button class="btn btn-primary" data-route-dialog="sale">Hacer otra venta</button><button class="btn btn-secondary" data-sale-id="${sale.id}">Ver detalle del ticket</button><button class="btn btn-ghost" data-route-dialog="home">Volver al inicio</button></div></div>`, dialog => {
+  openDialog(`<div class="dialog-body success-content" style="padding-top:1.8rem"><div class="success-mark">✓</div><p class="eyebrow">Venta ${sale.id}</p><h2>¡Venta guardada!</h2><p>${money(sale.total)} · ${sale.method}</p>${sale.change > 0 ? `<div class="change-box"><span>Entrega de vuelto</span><strong>${money(sale.change)}</strong></div>` : ""}<div style="display:grid;gap:.6rem;margin-top:1.2rem"><button class="btn btn-primary" data-route-dialog="sale">Hacer otra venta</button><button class="btn btn-secondary" data-print-sale="${sale.id}">${icons.print} Imprimir ticket</button><button class="btn btn-ghost" data-sale-id="${sale.id}">Ver detalle del ticket</button><button class="btn btn-ghost" data-route-dialog="home">Volver al inicio</button></div></div>`, dialog => {
     dialog.addEventListener("click", event => {
       const route = event.target.closest("[data-route-dialog]")?.dataset.routeDialog;
       if (route) { dialog.close(); go(route); }
+      const printId = event.target.closest("[data-print-sale]")?.dataset.printSale;
+      if (printId) printTicket(printId);
       const saleId = event.target.closest("[data-sale-id]")?.dataset.saleId;
       if (saleId) { dialog.close(); saleDetail(saleId); }
     });
@@ -296,7 +329,55 @@ function successDialog(sale) {
 function saleDetail(id) {
   const sale = store.getSales().find(item => item.id === id);
   if (!sale) return;
-  openDialog(`<div class="dialog-head"><div><p class="eyebrow">Ticket ${sale.id}</p><h2>Detalle de venta</h2><p>${dateTime(sale.createdAt)}</p></div><button class="close-button" data-close aria-label="Cerrar">×</button></div><div class="dialog-body"><div class="receipt-detail">${sale.items.map(item => `<div class="detail-line"><span>${item.qty} × ${escapeHTML(item.name)}</span><strong>${money(item.qty * item.price)}</strong></div>`).join("")}<div class="detail-line total"><span>Total</span><span>${money(sale.total)}</span></div></div><div class="detail-line"><span>Forma de pago</span><strong>${sale.method}</strong></div>${sale.change > 0 ? `<div class="detail-line"><span>Vuelto entregado</span><strong>${money(sale.change)}</strong></div>` : ""}<button class="btn btn-secondary btn-block" data-close style="margin-top:1rem">Cerrar ticket</button></div>`);
+  openDialog(`<div class="dialog-head"><div><p class="eyebrow">Ticket ${sale.id}</p><h2>Detalle de venta</h2><p>${dateTime(sale.createdAt)}</p></div><button class="close-button" data-close aria-label="Cerrar">×</button></div><div class="dialog-body"><div class="receipt-detail">${sale.items.map(item => `<div class="detail-line"><span>${item.qty} × ${escapeHTML(item.name)}</span><strong>${money(item.qty * item.price)}</strong></div>`).join("")}<div class="detail-line total"><span>Total</span><span>${money(sale.total)}</span></div></div><div class="detail-line"><span>Forma de pago</span><strong>${sale.method}</strong></div>${sale.change > 0 ? `<div class="detail-line"><span>Vuelto entregado</span><strong>${money(sale.change)}</strong></div>` : ""}<div class="dialog-actions"><button class="btn btn-primary btn-block" data-print-sale="${sale.id}">${icons.print} Imprimir ticket</button><button class="btn btn-secondary btn-block" data-close>Cerrar ticket</button></div></div>`, dialog => {
+    dialog.addEventListener("click", event => {
+      const printId = event.target.closest("[data-print-sale]")?.dataset.printSale;
+      if (printId) printTicket(printId);
+    });
+  });
+}
+
+function printTicket(id) {
+  const sale = store.getSales().find(item => item.id === id);
+  if (!sale) return;
+  document.querySelector("#print-ticket")?.remove();
+  const printable = document.createElement("section");
+  printable.id = "print-ticket";
+  printable.innerHTML = `<div class="print-brand">FIADITO</div><h1>${escapeHTML(store.state.user.store)}</h1><p>Ticket ${sale.id}<br>${dateTime(sale.createdAt)}</p><div class="print-lines">${sale.items.map(item => `<div><span>${item.qty} × ${escapeHTML(item.name)}<small>${money(item.price)} c/u</small></span><strong>${money(item.qty * item.price)}</strong></div>`).join("")}</div><div class="print-total"><span>TOTAL</span><strong>${money(sale.total)}</strong></div><p>Pago: ${sale.method}${sale.change > 0 ? `<br>Vuelto: ${money(sale.change)}` : ""}</p><p class="print-thanks">Gracias por tu compra</p>`;
+  document.body.append(printable);
+  document.body.classList.add("printing-ticket");
+  window.print();
+  setTimeout(() => { document.body.classList.remove("printing-ticket"); printable.remove(); }, 500);
+}
+
+function cashClosingDialog() {
+  const daySales = store.getSales().filter(sale => localDateKey(sale.createdAt) === state.selectedDate);
+  const cashSales = daySales.filter(sale => sale.method === "Efectivo").reduce((sum, sale) => sum + sale.total, 0);
+  const totalSales = daySales.reduce((sum, sale) => sum + sale.total, 0);
+  const existing = store.getCashClosing(state.selectedDate);
+  const openingCash = existing?.openingCash ?? 0;
+  const countedCash = existing?.countedCash ?? "";
+  openDialog(`<div class="dialog-head"><div><p class="eyebrow">${friendlyDate(state.selectedDate)}</p><h2>Cuadre de caja</h2><p>Compara lo esperado con el efectivo contado.</p></div><button class="close-button" data-close aria-label="Cerrar">×</button></div><div class="dialog-body"><div class="closing-explainer"><span>Ventas del día</span><strong>${money(totalSales)}</strong><small>De ese total, ${money(cashSales)} ingresaron en efectivo.</small></div><form id="cash-closing-form"><div class="field"><label for="opening-cash">Fondo inicial de caja</label><input id="opening-cash" name="openingCash" type="number" min="0" step="0.10" inputmode="decimal" value="${openingCash}" required /><span class="hint">El dinero que había antes de empezar a vender.</span></div><div class="field"><label for="counted-cash">Efectivo contado al cerrar</label><input id="counted-cash" name="countedCash" type="number" min="0" step="0.10" inputmode="decimal" value="${countedCash}" placeholder="Cuenta billetes y monedas" required /></div><div class="closing-calculation"><div><span>Debería haber</span><strong id="expected-cash">${money(openingCash + cashSales)}</strong></div><div><span>Diferencia</span><strong id="cash-difference">${countedCash === "" ? "—" : closingStatus(Number(countedCash) - openingCash - cashSales)}</strong></div></div><p class="hint">Fiadito calcula: fondo inicial + ventas en efectivo. Yape, Plin y otros pagos se muestran en el resumen, pero no entran a la caja física.</p><button class="btn btn-primary btn-block" type="submit">${existing ? "Actualizar cuadre" : "Guardar cuadre del día"}</button></form></div>`, dialog => {
+    const update = () => {
+      const opening = Number(dialog.querySelector("#opening-cash").value || 0);
+      const countedValue = dialog.querySelector("#counted-cash").value;
+      const expected = opening + cashSales;
+      dialog.querySelector("#expected-cash").textContent = money(expected);
+      dialog.querySelector("#cash-difference").textContent = countedValue === "" ? "—" : closingStatus(Number(countedValue) - expected);
+    };
+    dialog.addEventListener("input", event => {
+      if (["opening-cash", "counted-cash"].includes(event.target.id)) update();
+    });
+    dialog.querySelector("#cash-closing-form").addEventListener("submit", event => {
+      event.preventDefault();
+      const form = new FormData(event.currentTarget);
+      const opening = Number(form.get("openingCash"));
+      const counted = Number(form.get("countedCash"));
+      const expected = opening + cashSales;
+      store.saveCashClosing({ date: state.selectedDate, openingCash: opening, cashSales, expectedCash: expected, countedCash: counted, difference: counted - expected });
+      dialog.close(); render(); toast("Cuadre de caja guardado");
+    });
+  });
 }
 
 function productDialog(id = null) {
@@ -343,6 +424,14 @@ app.addEventListener("input", event => {
   }
 });
 
+app.addEventListener("change", event => {
+  if (event.target.id === "sales-date") {
+    state.selectedDate = event.target.value || localDateKey();
+    state.query = "";
+    render();
+  }
+});
+
 app.addEventListener("click", event => {
   const route = event.target.closest("[data-route]")?.dataset.route;
   if (route) { go(route); return; }
@@ -372,6 +461,8 @@ app.addEventListener("click", event => {
   const action = event.target.closest("[data-action]")?.dataset.action;
   if (action === "checkout") checkoutDialog();
   if (action === "clear-search") { state.query = ""; render(); }
+  if (action === "today-sales") { state.selectedDate = localDateKey(); state.query = ""; render(); }
+  if (action === "cash-closing") cashClosingDialog();
   if (action === "profile") profileDialog();
   if (action === "logout") { store.logout(); render(); }
   if (action === "reset") { store.reset(); store.login("Carlos"); go("home"); toast("Datos de demostración restablecidos"); }
