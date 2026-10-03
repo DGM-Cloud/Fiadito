@@ -2,6 +2,11 @@
 
 Frontend funcional para registrar ventas, productos e inventario con datos locales. Incluye roles de administrador y vendedor, turnos de caja, búsqueda por código de barras, impresión de tickets, anulaciones autorizadas, historial por fecha y registro de actividad.
 
+## Demo publicada
+
+- Aplicación: https://diegohlz.github.io/Fiadito/
+- Repositorio: https://github.com/DiegoHLZ/Fiadito
+
 ## Requisitos
 
 - Un navegador moderno.
