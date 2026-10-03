@@ -1,8 +1,13 @@
-# Fiadito V2
+# Fiadito
 
 Frontend funcional para registrar ventas, productos e inventario con datos locales. Incluye roles de administrador y vendedor, turnos de caja, búsqueda por código de barras, impresión de tickets, anulaciones autorizadas, historial por fecha y registro de actividad.
 
-## Ejecutar
+## Requisitos
+
+- Un navegador moderno.
+- Python 3 (opcional, recomendado para levantar un servidor local).
+
+## Ejecutar localmente
 
 Abre `dist/index.html` directamente o, desde la carpeta `fiadito`, ejecuta:
 
@@ -10,7 +15,9 @@ Abre `dist/index.html` directamente o, desde la carpeta `fiadito`, ejecuta:
 python3 -m http.server 4173 --directory dist
 ```
 
-Luego visita `http://localhost:4173`. No requiere instalación ni backend.
+Luego visita `http://localhost:4173`.
+
+El proyecto no usa paquetes externos, por lo que no es necesario instalar dependencias. También puedes abrir `dist/index.html` directamente, aunque el servidor local evita restricciones de algunos navegadores al cargar módulos JavaScript.
 
 ## Datos
 

@@ -1,0 +1,25 @@
+# Dependencias
+node_modules/
+
+# Artefactos de compilacion y cobertura
+build/
+coverage/
+.cache/
+.parcel-cache/
+.vite/
+
+# Configuracion local y secretos
+.env
+.env.*
+!.env.example
+*.local
+
+# Archivos del sistema y editores
+.DS_Store
+Thumbs.db
+.idea/
+.vscode/
+*.swp
+
+# Configuracion de hosting de OpenAI (no versionar)
+.openai/
