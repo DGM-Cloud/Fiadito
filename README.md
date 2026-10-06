@@ -4,8 +4,8 @@ Frontend funcional para registrar ventas, productos e inventario con datos local
 
 ## Demo publicada
 
-- Aplicación: https://diegohlz.github.io/Fiadito/
-- Repositorio: https://github.com/DiegoHLZ/Fiadito
+- Aplicación: https://dgm-cloud.github.io/Fiadito/
+- Repositorio: https://github.com/DGM-Cloud/Fiadito
 
 ## Requisitos
 
