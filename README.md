@@ -39,6 +39,22 @@ No hay dependencias que instalar ni proceso de compilación. También puedes abr
 - `dist/styles.css`: sistema visual responsive.
 - `dist/data-service.js`: datos mock y persistencia local, aislados para poder sustituirlos por una API.
 - `dist/app.js`: vistas, navegación e interacciones del demo.
+- `docs/README.md`: índice, responsables y reglas de la documentación del MVP.
+- `docs/FIADITO_INTELLIGENCE.md`: definición funcional y técnica de Fiadito Intelligence.
+- `docs/modulos/`: fichas de trabajo de Ventas, Inventario, Backend y Calidad/Pilotos.
+- `docs/plantillas/MODULO.md`: estructura común para documentar un módulo sin duplicar contexto.
+
+## Documentación del MVP
+
+La aplicación en `dist/` sigue siendo una demo frontend con datos simulados. La documentación de `docs/` describe el trabajo necesario para convertirla en un MVP integrado; una función documentada no debe considerarse implementada hasta que exista evidencia verificable.
+
+- [Índice y acuerdos de documentación](./docs/README.md)
+- [Fiadito Intelligence — Arturo](./docs/FIADITO_INTELLIGENCE.md)
+- [Ventas — Mario](./docs/modulos/VENTAS.md)
+- [Productos e inventario — George](./docs/modulos/INVENTARIO.md)
+- [Backend, datos y accesos — Sebastián](./docs/modulos/BACKEND_DATOS_ACCESOS.md)
+- [Integración, calidad y pilotos — Gabo](./docs/modulos/INTEGRACION_CALIDAD_PILOTOS.md)
+- [Plantilla para módulos](./docs/plantillas/MODULO.md)
 
 ## Demo publicada
 
