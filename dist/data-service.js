@@ -1,147 +1,76 @@
-const STORAGE_KEY = "fiadito-demo-v2";
+const STORAGE_KEY = "fiadito-demo-v3";
 
-export const categories = ["Todos", "Bebidas", "Abarrotes", "Snacks", "Lácteos", "Limpieza"];
-
-export const seedUsers = [
-  { id: "u-admin", name: "Carlos", role: "admin", roleLabel: "Administrador", pin: "1234", active: true },
-  { id: "u-seller", name: "Rosa", role: "seller", roleLabel: "Vendedora", pin: "2468", active: true }
-];
+export const categories = ["Todos", "Campaña", "Bebidas", "Abarrotes", "Snacks", "Lácteos", "Limpieza"];
 
 export const seedProducts = [
-  { id: "p1", barcode: "7750243052337", name: "Gaseosa Inca Kola", short: "Inca Kola", category: "Bebidas", price: 3.5, stock: 18, minStock: 6, unit: "Botella 500 ml", emoji: "🥤", color: "#f4b63d" },
-  { id: "p2", name: "Leche Gloria", short: "Leche Gloria", category: "Lácteos", price: 4.5, stock: 4, minStock: 6, unit: "Lata 400 g", emoji: "🥛", color: "#5f91cd" },
-  { id: "p3", barcode: "7751271026000", name: "Chocolate Sublime", short: "Sublime", category: "Snacks", price: 2, stock: 23, minStock: 8, unit: "Unidad", emoji: "🍫", color: "#76513c" },
-  { id: "p4", name: "Arroz Costeño", short: "Arroz Costeño", category: "Abarrotes", price: 5.2, stock: 10, minStock: 5, unit: "Bolsa 1 kg", emoji: "🍚", color: "#d6a959" },
-  { id: "p5", name: "Aceite Primor", short: "Aceite Primor", category: "Abarrotes", price: 9.9, stock: 2, minStock: 4, unit: "Botella 900 ml", emoji: "🫗", color: "#ef9e32" },
-  { id: "p6", barcode: "7751271001014", name: "Galleta Casino", short: "Galleta Casino", category: "Snacks", price: 1.5, stock: 30, minStock: 10, unit: "Paquete", emoji: "🍪", color: "#d87352" },
-  { id: "p7", name: "Agua San Luis", short: "Agua San Luis", category: "Bebidas", price: 2, stock: 16, minStock: 6, unit: "Botella 625 ml", emoji: "💧", color: "#5ca8bd" },
-  { id: "p8", name: "Detergente Bolívar", short: "Detergente", category: "Limpieza", price: 3.8, stock: 0, minStock: 5, unit: "Bolsa 260 g", emoji: "🫧", color: "#658ac7" },
-  { id: "p9", name: "Atún Florida", short: "Atún Florida", category: "Abarrotes", price: 5.5, stock: 7, minStock: 5, unit: "Lata 170 g", emoji: "🐟", color: "#3d8c9e" },
-  { id: "p10", name: "Yogurt Gloria", short: "Yogurt Gloria", category: "Lácteos", price: 6.9, stock: 3, minStock: 5, unit: "Botella 1 kg", emoji: "🥣", color: "#d66e8d" },
-  { id: "p11", name: "Papel higiénico Elite", short: "Papel Elite", category: "Limpieza", price: 8.5, stock: 12, minStock: 4, unit: "Paquete x4", emoji: "🧻", color: "#71a4b5" },
-  { id: "p12", name: "Pan de molde", short: "Pan de molde", category: "Abarrotes", price: 7.5, stock: 5, minStock: 4, unit: "Bolsa", emoji: "🍞", color: "#ba7650" }
+  { id:"paneton", name:"Panetón D'Onofrio", short:"Panetón", category:"Campaña", emoji:"🎄", cost:18.2, price:24.9, volumeQty:12, volumePrice:255, stock:34, min:24, velocity:8.4, daysLeft:4, lot:"NAV-2611", expires:"2027-02-10", supplier:"Distribuidora Norte", trend:32 },
+  { id:"chocolate", name:"Chocolate para taza", short:"Chocolate taza", category:"Campaña", emoji:"☕", cost:6.1, price:8.5, stock:17, min:20, velocity:5.8, daysLeft:3, lot:"CHO-104", expires:"2027-06-18", supplier:"Alicorp", trend:24 },
+  { id:"leche", name:"Leche evaporada Gloria", short:"Leche Gloria", category:"Lácteos", emoji:"🥛", cost:3.45, price:4.6, stock:8, min:18, velocity:6.2, daysLeft:1, lot:"LCH-822", expires:"2027-04-12", supplier:"Gloria", trend:12 },
+  { id:"inca", name:"Inca Kola 500 ml", short:"Inca Kola", category:"Bebidas", emoji:"🥤", cost:2.35, price:3.5, stock:21, min:12, velocity:7.1, daysLeft:5, lot:"IK-552", expires:"2027-08-02", supplier:"Arca Continental", trend:8 },
+  { id:"arroz", name:"Arroz Costeño 1 kg", short:"Arroz Costeño", category:"Abarrotes", emoji:"🍚", cost:4.15, price:5.5, stock:27, min:14, velocity:4.5, daysLeft:6, lot:"ARR-211", expires:"2027-09-20", supplier:"Costeño", trend:3 },
+  { id:"aceite", name:"Aceite Primor 900 ml", short:"Aceite Primor", category:"Abarrotes", emoji:"🫗", cost:8.05, price:10.2, stock:5, min:10, velocity:3.7, daysLeft:1, lot:"ACE-442", expires:"2027-03-22", supplier:"Alicorp", trend:15 },
+  { id:"turron", name:"Turrón Doña Pepa 900 g", short:"Turrón 900 g", category:"Campaña", emoji:"🟣", cost:17.5, price:23.9, stock:16, min:4, velocity:.3, daysLeft:52, lot:"TUR-1026", expires:"2027-01-08", supplier:"San José", trend:-72 },
+  { id:"galletas", name:"Galletas Casino", short:"Galletas Casino", category:"Snacks", emoji:"🍪", cost:1.05, price:1.7, stock:46, min:12, velocity:2.2, daysLeft:15, lot:"GAL-312", expires:"2026-11-14", supplier:"Mondelez", trend:-18 },
+  { id:"yogurt", name:"Yogurt Gloria 1 kg", short:"Yogurt Gloria", category:"Lácteos", emoji:"🥣", cost:5.25, price:7.2, stock:9, min:8, velocity:1.1, daysLeft:8, lot:"YOG-701", expires:"2026-10-27", supplier:"Gloria", trend:-6 },
+  { id:"atun", name:"Atún Florida 170 g", short:"Atún Florida", category:"Abarrotes", emoji:"🐟", cost:4.15, price:5.8, stock:20, min:8, velocity:2.9, daysLeft:7, lot:"ATU-210", expires:"2028-03-16", supplier:"G.W. Yichang", trend:4 },
+  { id:"agua", name:"Agua San Luis 625 ml", short:"Agua San Luis", category:"Bebidas", emoji:"💧", cost:1.15, price:2, stock:28, min:12, velocity:5.4, daysLeft:5, lot:"AGU-988", expires:"2027-12-05", supplier:"Arca Continental", trend:6 },
+  { id:"detergente", name:"Detergente Bolívar 260 g", short:"Detergente", category:"Limpieza", emoji:"🫧", cost:2.75, price:4, stock:3, min:7, velocity:1.8, daysLeft:2, lot:"DET-772", expires:"2028-04-19", supplier:"Alicorp", trend:1 }
+];
+
+const seedCustomers = [
+  { id:"maria", name:"María Quispe", phone:"••• 428", debt:86.5, limit:150, lastPayment:"2026-10-12", lastPurchase:"2026-10-17", risk:"Al día", color:"green" },
+  { id:"jorge", name:"Jorge Ramos", phone:"••• 905", debt:132, limit:150, lastPayment:"2026-09-28", lastPurchase:"2026-10-04", risk:"Cobrar hoy", color:"red" },
+  { id:"bodega-luz", name:"Bodega Luz", phone:"••• 611", debt:255, limit:400, lastPayment:"2026-10-08", lastPurchase:"2026-10-16", risk:"Compra mayorista", color:"amber" },
+  { id:"elena", name:"Elena Soto", phone:"••• 183", debt:24.8, limit:80, lastPayment:"2026-10-15", lastPurchase:"2026-10-18", risk:"Al día", color:"green" }
 ];
 
 const seedSales = [
-  { id: "V-1042", sellerId: "u-seller", sellerName: "Rosa", status: "completed", createdAt: new Date(Date.now() - 24 * 60000).toISOString(), method: "Yape", total: 14, received: 14, change: 0, items: [{ productId: "p1", name: "Gaseosa Inca Kola", price: 3.5, qty: 2 }, { productId: "p12", name: "Pan de molde", price: 7.5, qty: 1 }] },
-  { id: "V-1041", sellerId: "u-admin", sellerName: "Carlos", status: "completed", createdAt: new Date(Date.now() - 68 * 60000).toISOString(), method: "Efectivo", total: 10.5, received: 20, change: 9.5, items: [{ productId: "p3", name: "Chocolate Sublime", price: 2, qty: 3 }, { productId: "p2", name: "Leche Gloria", price: 4.5, qty: 1 }] },
-  { id: "V-1040", sellerId: "u-seller", sellerName: "Rosa", status: "completed", createdAt: new Date(Date.now() - 130 * 60000).toISOString(), method: "Plin", total: 9.2, received: 9.2, change: 0, items: [{ productId: "p4", name: "Arroz Costeño", price: 5.2, qty: 1 }, { productId: "p7", name: "Agua San Luis", price: 2, qty: 2 }] }
+  { id:"V-2058", date:"2026-10-19T08:18:00-05:00", method:"Yape", total:39.4, margin:10.8, items:[{id:"leche",name:"Leche Gloria",qty:4,price:4.6},{id:"galletas",name:"Galletas Casino",qty:7,price:1.7},{id:"agua",name:"Agua San Luis",qty:3,price:2}] },
+  { id:"V-2057", date:"2026-10-19T09:42:00-05:00", method:"Efectivo", total:18.7, margin:5.1, items:[{id:"inca",name:"Inca Kola",qty:3,price:3.5},{id:"aceite",name:"Aceite Primor",qty:1,price:10.2}] },
+  { id:"V-2056", date:"2026-10-19T11:05:00-05:00", method:"Plin", total:53.2, margin:14.4, items:[{id:"arroz",name:"Arroz Costeño",qty:5,price:5.5},{id:"atun",name:"Atún Florida",qty:3,price:5.8},{id:"leche",name:"Leche Gloria",qty:2,price:4.6}] },
+  { id:"V-2055", date:"2026-10-19T13:12:00-05:00", method:"Fiado", customerId:"maria", total:22.3, margin:6.2, items:[{id:"arroz",name:"Arroz Costeño",qty:2,price:5.5},{id:"yogurt",name:"Yogurt Gloria",qty:1,price:7.2},{id:"galletas",name:"Galletas Casino",qty:2,price:1.7}] },
+  { id:"V-2054", date:"2026-10-19T17:48:00-05:00", method:"Efectivo", total:96.5, margin:25.7, items:[{id:"inca",name:"Inca Kola",qty:8,price:3.5},{id:"agua",name:"Agua San Luis",qty:12,price:2},{id:"atun",name:"Atún Florida",qty:5,price:5.8},{id:"galletas",name:"Galletas Casino",qty:5,price:1.7}] }
 ];
 
-function initialState() {
-  return { products: structuredClone(seedProducts), sales: structuredClone(seedSales), users: structuredClone(seedUsers), shifts: [], cashMovements: [], auditLog: [], cashClosings: [], user: null };
-}
+const defaultState = () => ({
+  products: structuredClone(seedProducts), customers: structuredClone(seedCustomers), sales: structuredClone(seedSales),
+  shopping: [{productId:"leche",qty:24},{productId:"aceite",qty:12}], promotions: [], activity: [], demoStartedAt: new Date().toISOString()
+});
 
-export class LocalStore {
-  constructor() { this.state = this.load(); }
-  load() {
+export class DemoStore {
+  constructor(){ this.state=this.load(); }
+  load(){
     try {
-      const saved = JSON.parse(localStorage.getItem(STORAGE_KEY));
-      if (!saved) return initialState();
-      const defaults = initialState();
-      return {
-        ...defaults,
-        ...saved,
-        user: saved.user?.id ? saved.user : null,
-        users: saved.users || defaults.users,
-        shifts: saved.shifts || [],
-        cashMovements: saved.cashMovements || [],
-        auditLog: saved.auditLog || [],
-        cashClosings: saved.cashClosings || [],
-        products: (saved.products || defaults.products).map(product => ({ ...product, barcode: product.barcode || seedProducts.find(seed => seed.id === product.id)?.barcode || "" })),
-        sales: (saved.sales || defaults.sales).map(sale => ({ sellerId: "u-admin", sellerName: "Carlos", status: "completed", ...sale }))
-      };
-    }
-    catch { return initialState(); }
+      const saved=JSON.parse(localStorage.getItem(STORAGE_KEY));
+      return saved ? {...defaultState(),...saved} : defaultState();
+    } catch { return defaultState(); }
   }
-  save() { localStorage.setItem(STORAGE_KEY, JSON.stringify(this.state)); }
-  loginWithPin(pin) {
-    const account = this.state.users.find(user => user.pin === String(pin) && user.active);
-    if (!account) return null;
-    this.state.user = { id: account.id, name: account.name, role: account.role, roleLabel: account.roleLabel, store: "Bodega San Carlos" };
-    this.addAudit("Inicio de sesión", account.name);
-    this.save();
-    return this.state.user;
+  save(){ localStorage.setItem(STORAGE_KEY,JSON.stringify(this.state)); }
+  products(){ return this.state.products; }
+  sales(){ return [...this.state.sales].sort((a,b)=>new Date(b.date)-new Date(a.date)); }
+  customers(){ return this.state.customers; }
+  addToShopping(productId,qty){
+    const item=this.state.shopping.find(entry=>entry.productId===productId);
+    if(item) item.qty=Math.max(item.qty,Number(qty)); else this.state.shopping.push({productId,qty:Number(qty)});
+    this.log("Producto agregado a la compra"); this.save();
   }
-  logout() { if (this.state.user) this.addAudit("Cierre de sesión", this.state.user.name); this.state.user = null; this.save(); }
-  verifyAdminPin(pin) { return this.state.users.find(user => user.role === "admin" && user.pin === String(pin) && user.active) || null; }
-  addAudit(action, detail = "", user = this.state.user) {
-    this.state.auditLog.unshift({ id: `a${Date.now()}${Math.random()}`, createdAt: new Date().toISOString(), userId: user?.id || "system", userName: user?.name || "Sistema", action, detail });
-    this.state.auditLog = this.state.auditLog.slice(0, 100);
+  removeFromShopping(productId){ this.state.shopping=this.state.shopping.filter(item=>item.productId!==productId); this.save(); }
+  shoppingList(){ return this.state.shopping.map(item=>({...item,product:this.state.products.find(p=>p.id===item.productId)})).filter(item=>item.product); }
+  createPromotion(promotion){ this.state.promotions.unshift({...promotion,id:`P-${Date.now()}`,createdAt:new Date().toISOString()}); this.log("Promoción creada",promotion.title); this.save(); }
+  recordPayment(customerId,amount){
+    const customer=this.state.customers.find(item=>item.id===customerId); if(!customer)return;
+    customer.debt=Math.max(0,customer.debt-Number(amount)); customer.lastPayment=new Date().toISOString().slice(0,10); customer.risk=customer.debt>customer.limit*.8?"Cobrar hoy":"Al día"; customer.color=customer.debt>customer.limit*.8?"red":"green";
+    this.log("Abono registrado",`${customer.name} · S/ ${Number(amount).toFixed(2)}`); this.save();
   }
-  getAuditLog() { return [...this.state.auditLog]; }
-  getActiveShift(userId = this.state.user?.id) { return this.state.shifts.find(shift => shift.userId === userId && shift.status === "open") || null; }
-  openShift(openingCash) {
-    if (this.getActiveShift()) return this.getActiveShift();
-    const shift = { id: `t${Date.now()}`, userId: this.state.user.id, userName: this.state.user.name, openedAt: new Date().toISOString(), openingCash: Number(openingCash), status: "open" };
-    this.state.shifts.unshift(shift); this.addAudit("Apertura de turno", `Fondo inicial S/ ${Number(openingCash).toFixed(2)}`); this.save(); return shift;
+  createSale({items,method,customerId}){
+    const total=items.reduce((sum,item)=>sum+this.unitPrice(item)*item.qty,0);
+    const margin=items.reduce((sum,item)=>sum+(this.unitPrice(item)-item.cost)*item.qty,0);
+    const sale={id:`V-${2059+this.state.sales.length-seedSales.length}`,date:new Date().toISOString(),method,total,margin,customerId:method==="Fiado"?customerId:null,items:items.map(item=>({id:item.id,name:item.short,qty:item.qty,price:this.unitPrice(item)}))};
+    items.forEach(item=>{const product=this.state.products.find(p=>p.id===item.id); if(product)product.stock=Math.max(0,product.stock-item.qty);});
+    if(method==="Fiado"){const customer=this.state.customers.find(item=>item.id===customerId); if(customer){customer.debt+=total;customer.lastPurchase=new Date().toISOString().slice(0,10);}}
+    this.state.sales.unshift(sale); this.log("Venta registrada",`${sale.id} · S/ ${total.toFixed(2)}`); this.save(); return sale;
   }
-  closeShift({ countedCash, expectedCash, difference }) {
-    const shift = this.getActiveShift();
-    if (!shift) return null;
-    Object.assign(shift, { status: "closed", closedAt: new Date().toISOString(), countedCash: Number(countedCash), expectedCash: Number(expectedCash), difference: Number(difference) });
-    this.addAudit("Cierre de turno", `Diferencia S/ ${Number(difference).toFixed(2)}`); this.save(); return shift;
-  }
-  addCashMovement({ type, amount, reason, authorizedBy }) {
-    const movement = { id: `m${Date.now()}`, shiftId: this.getActiveShift()?.id || null, userId: this.state.user.id, userName: this.state.user.name, createdAt: new Date().toISOString(), type, amount: Number(amount), reason, authorizedBy };
-    this.state.cashMovements.unshift(movement); this.addAudit(type === "withdrawal" ? "Retiro de caja" : "Ingreso de caja", `${reason} · S/ ${Number(amount).toFixed(2)}`); this.save(); return movement;
-  }
-  getCashMovements(shiftId) { return this.state.cashMovements.filter(item => item.shiftId === shiftId); }
-  getProducts() { return this.state.products; }
-  getSales() { return [...this.state.sales].sort((a, b) => new Date(b.createdAt) - new Date(a.createdAt)); }
-  getCashClosing(date) { return this.state.cashClosings.find(closing => closing.date === date) || null; }
-  saveCashClosing(closing) {
-    const normalized = {
-      ...closing,
-      openingCash: Number(closing.openingCash),
-      cashSales: Number(closing.cashSales),
-      expectedCash: Number(closing.expectedCash),
-      countedCash: Number(closing.countedCash),
-      difference: Number(closing.difference),
-      savedAt: new Date().toISOString()
-    };
-    const index = this.state.cashClosings.findIndex(item => item.date === normalized.date);
-    if (index >= 0) this.state.cashClosings[index] = normalized;
-    else this.state.cashClosings.unshift(normalized);
-    this.addAudit(index >= 0 ? "Cuadre diario actualizado" : "Cuadre diario guardado", `${normalized.date} · diferencia S/ ${normalized.difference.toFixed(2)}`);
-    this.save();
-    return normalized;
-  }
-  saveProduct(product) {
-    const normalized = { ...product, price: Number(product.price), stock: Number(product.stock), minStock: Number(product.minStock) };
-    const index = this.state.products.findIndex(item => item.id === normalized.id);
-    const previous = index >= 0 ? this.state.products[index] : null;
-    if (index >= 0) this.state.products[index] = normalized;
-    else this.state.products.unshift({ ...normalized, id: `p${Date.now()}`, emoji: normalized.emoji || "📦", color: normalized.color || "#e87545" });
-    const detail = previous
-      ? `${normalized.name} · precio S/ ${previous.price.toFixed(2)} → S/ ${normalized.price.toFixed(2)} · stock ${previous.stock} → ${normalized.stock}`
-      : `${normalized.name} · precio S/ ${normalized.price.toFixed(2)} · stock ${normalized.stock}`;
-    this.addAudit(index >= 0 ? "Producto actualizado" : "Producto creado", detail);
-    this.save();
-  }
-  createSale({ items, method, received }) {
-    if (!this.getActiveShift()) throw new Error("Debes abrir un turno antes de vender");
-    const total = items.reduce((sum, item) => sum + item.price * item.qty, 0);
-    const sale = {
-      id: `V-${1043 + this.state.sales.length - seedSales.length}`,
-      sellerId: this.state.user.id, sellerName: this.state.user.name, shiftId: this.getActiveShift()?.id || null, status: "completed",
-      createdAt: new Date().toISOString(), method, total,
-      received: method === "Efectivo" ? Number(received) : total,
-      change: method === "Efectivo" ? Math.max(0, Number(received) - total) : 0,
-      items: items.map(item => ({ productId: item.id, name: item.name, price: item.price, qty: item.qty }))
-    };
-    for (const item of items) {
-      const product = this.state.products.find(p => p.id === item.id);
-      if (product) product.stock = Math.max(0, product.stock - item.qty);
-    }
-    this.state.sales.unshift(sale); this.addAudit("Venta registrada", `${sale.id} · S/ ${total.toFixed(2)}`); this.save(); return sale;
-  }
-  voidSale(id, reason, authorizedBy) {
-    const sale = this.state.sales.find(item => item.id === id);
-    if (!sale || sale.status === "voided") return null;
-    sale.status = "voided"; sale.voidedAt = new Date().toISOString(); sale.voidReason = reason; sale.authorizedBy = authorizedBy;
-    for (const item of sale.items) { const product = this.state.products.find(p => p.id === item.productId); if (product) product.stock += item.qty; }
-    this.addAudit("Venta anulada", `${sale.id} · ${reason} · autorizó ${authorizedBy}`); this.save(); return sale;
-  }
-  reset() { this.state = initialState(); this.save(); }
+  unitPrice(item){ return item.volumeQty&&item.qty>=item.volumeQty ? item.volumePrice/item.volumeQty : item.price; }
+  log(action,detail=""){ this.state.activity.unshift({action,detail,date:new Date().toISOString()}); }
+  reset(){ this.state=defaultState(); this.save(); }
 }

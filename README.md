@@ -1,40 +1,52 @@
-# Fiadito
+# Fiadito 2.0
 
-Frontend funcional para registrar ventas, productos e inventario con datos locales. Incluye roles de administrador y vendedor, turnos de caja, búsqueda por código de barras, impresión de tickets, anulaciones autorizadas, historial por fecha y registro de actividad.
+> **Fiadito — el copiloto inteligente de tu negocio.**
 
-## Demo publicada
+Demo frontend para bodegas y pequeños negocios peruanos. Convierte datos simulados de ventas, inventario y fiados en acciones concretas: qué comprar, cuánto reponer, qué promoción crear y a quién cobrar.
 
-- Aplicación: https://dgm-cloud.github.io/Fiadito/
-- Repositorio: https://github.com/DGM-Cloud/Fiadito
+## Alcance del demo
 
-## Requisitos
+Esta entrega es **solo frontend**. No incluye backend, base de datos, autenticación real, sincronización entre dispositivos ni modelos predictivos en producción. Los datos viven en `localStorage` y se pueden restablecer desde la interfaz.
 
-- Un navegador moderno.
-- Python 3 (opcional, recomendado para levantar un servidor local).
+El demo incluye:
+
+- Ventas rápidas con efectivo, Yape, Plin y fiado.
+- Precios por volumen, incluido el caso de panetones por caja de 12.
+- Historial y resumen por productos, métodos de pago, día y hora.
+- Inventario con costo, precio, margen, categorías, lotes, vencimientos, baja rotación y “plata dormida”.
+- Sales Intelligence e Inventory Intelligence con recomendaciones accionables.
+- Seasonal Intelligence para campañas peruanas: Navidad, octubre, Día de la Madre y Fiestas Patrias.
+- Promotion Intelligence por baja rotación, vencimiento, asociaciones, temporada y compras mayoristas.
+- Fiados/Credit Intelligence con clientes, deudas, abonos y sugerencias de cobranza.
+- Fiadito Copilot con consultas simuladas en lenguaje natural y voz.
+- Lista de compra inteligente, creación de promociones y registro de pagos con datos locales.
 
 ## Ejecutar localmente
 
-Abre `dist/index.html` directamente o, desde la carpeta `fiadito`, ejecuta:
+Desde la carpeta del proyecto:
 
 ```bash
 python3 -m http.server 4173 --directory dist
 ```
 
-Luego visita `http://localhost:4173`.
+Luego visita [http://localhost:4173](http://localhost:4173).
 
-El proyecto no usa paquetes externos, por lo que no es necesario instalar dependencias. También puedes abrir `dist/index.html` directamente, aunque el servidor local evita restricciones de algunos navegadores al cargar módulos JavaScript.
+No hay dependencias que instalar ni proceso de compilación. También puedes abrir `dist/index.html`, aunque un servidor local evita restricciones de módulos en algunos navegadores.
 
-## Datos
+## Estructura
 
-La aplicación usa `localStorage`. `data-service.js` concentra modelos, datos mock y operaciones para que luego pueda sustituirse por un servicio API.
+- `dist/index.html`: entrada y metadatos.
+- `dist/styles.css`: sistema visual responsive.
+- `dist/data-service.js`: datos mock y persistencia local, aislados para poder sustituirlos por una API.
+- `dist/app.js`: vistas, navegación e interacciones del demo.
 
-## Accesos de demostración
+## Demo publicada
 
-- Administrador Carlos: PIN `1234`
-- Vendedora Rosa: PIN `2468`
+- Aplicación vigente: https://dgm-cloud.github.io/fiadito/
+- Repositorio: https://github.com/DGM-Cloud/Fiadito
 
-El administrador puede crear o editar productos, revisar la actividad del equipo, filtrar ventas por vendedor y autorizar anulaciones o retiros. El vendedor puede vender, consultar productos sin modificarlos y cerrar su propio turno. Para iniciar una venta, cada usuario debe abrir su turno indicando el fondo inicial.
+GitHub Pages publica directamente el contenido de `dist` mediante la rama `gh-pages`.
 
-En el cierre de turno, el efectivo esperado se calcula como `fondo inicial + ventas en efectivo + ingresos - retiros`. Los pagos mediante Yape, Plin u otros métodos no se suman a la caja física. Las ventas anuladas tampoco forman parte de los totales.
+## Qué falta para producción
 
-> Esta versión demuestra permisos y flujos usando únicamente el navegador. Para evitar fraudes en producción, los PIN, permisos, precios, anulaciones y auditoría deben validarse en un backend y una base de datos protegida.
+La siguiente etapa deberá definir e implementar API, base de datos, usuarios y permisos, seguridad, auditoría, sincronización, integración con comprobantes/pagos, entrenamiento o reglas de inteligencia y validación de predicciones. Ninguna recomendación del demo debe tratarse como una decisión automática de compra o crédito.
