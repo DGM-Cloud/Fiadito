@@ -1,4 +1,4 @@
-import { DemoStore, categories } from "./data-service.js?v=3.0";
+import { DemoStore, categories } from "./data-service.js?v=3.1";
 
 const store=new DemoStore();
 const app=document.querySelector("#app");
