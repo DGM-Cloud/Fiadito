@@ -49,6 +49,7 @@ No hay dependencias que instalar ni proceso de compilación. También puedes abr
 La aplicación en `dist/` sigue siendo una demo frontend con datos simulados. La documentación de `docs/` describe el trabajo necesario para convertirla en un MVP integrado; una función documentada no debe considerarse implementada hasta que exista evidencia verificable.
 
 - [Índice y acuerdos de documentación](./docs/README.md)
+- [Propuesta para revisar integraciones con el equipo](./docs/REVISION_INTEGRACIONES_MVP.md)
 - [Fiadito Intelligence — Arturo](./docs/FIADITO_INTELLIGENCE.md)
 - [Ventas — Mario](./docs/modulos/VENTAS.md)
 - [Productos e inventario — George](./docs/modulos/INVENTARIO.md)

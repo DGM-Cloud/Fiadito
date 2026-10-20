@@ -35,6 +35,10 @@ Calidad ───── escenarios, evidencia e incidencias ──────�
 
 La regla central es simple: una venta confirmada debe producir un registro persistente, un movimiento de stock y datos utilizables por Intelligence. Si uno de esos resultados falla, el flujo no está integrado.
 
+## Revisión antes de implementar
+
+La propuesta de API, campos, reglas de stock, eventos y datasets que el equipo debe revisar está en [`REVISION_INTEGRACIONES_MVP.md`](./REVISION_INTEGRACIONES_MVP.md). Todo su contenido permanece en estado `Propuesto` hasta que Mario, George, Sebastián, Gabo y Arturo registren sus observaciones y acuerdos.
+
 ## Qué debe contener cada documento
 
 Cada responsable mantiene un documento con:
