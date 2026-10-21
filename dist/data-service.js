@@ -34,7 +34,7 @@ const seedSales = [
 
 const defaultState = () => ({
   products: structuredClone(seedProducts), customers: structuredClone(seedCustomers), sales: structuredClone(seedSales),
-  shopping: [{productId:"leche",qty:24},{productId:"aceite",qty:12}], promotions: [], activity: [], demoStartedAt: new Date().toISOString()
+  shopping: [{productId:"leche",qty:24},{productId:"aceite",qty:12}], promotions: [], movements: [], activity: [], demoStartedAt: new Date().toISOString()
 });
 
 export class DemoStore {
@@ -49,6 +49,29 @@ export class DemoStore {
   products(){ return this.state.products; }
   sales(){ return [...this.state.sales].sort((a,b)=>new Date(b.date)-new Date(a.date)); }
   customers(){ return this.state.customers; }
+  addProduct(input,actor){
+    if(actor?.role!=="admin")throw new Error("Solo un administrador puede crear productos.");
+    const clean=value=>String(value||"").replace(/[<>]/g,"").trim();
+    const name=clean(input.name);
+    const cost=Number(input.cost);const price=Number(input.price);const stock=Number(input.stock);const min=Number(input.min);
+    if(!name)throw new Error("El nombre del producto es obligatorio.");
+    if([cost,price,stock,min].some(value=>!Number.isFinite(value)||value<0))throw new Error("Revisa costo, precio, stock y mínimo.");
+    if(price<cost)throw new Error("El precio de venta no puede ser menor que el costo en esta demo.");
+    const baseId=name.normalize("NFD").replace(/[\u0300-\u036f]/g,"").toLowerCase().replace(/[^a-z0-9]+/g,"-").replace(/(^-|-$)/g,"")||"producto";
+    const id=`${baseId}-${Date.now().toString(36)}`;
+    const product={id,name,short:clean(input.short)||name,category:clean(input.category)||"Abarrotes",emoji:clean(input.emoji)||"📦",cost,price,stock,min,velocity:0,daysLeft:stock>0?999:0,lot:clean(input.lot)||"SIN LOTE",expires:clean(input.expires)||"2027-12-31",supplier:clean(input.supplier)||"Sin proveedor",trend:0,createdAt:new Date().toISOString(),createdBy:actor?.id||"demo-admin"};
+    this.state.products.unshift(product);this.log("Producto creado",`${product.name} · ${actor?.name||"Administrador"}`);this.save();return product;
+  }
+  adjustStock(productId,delta,reason,actor){
+    if(actor?.role!=="admin")throw new Error("Solo un administrador puede modificar el inventario.");
+    const product=this.state.products.find(item=>item.id===productId);const amount=Number(delta);
+    if(!product)throw new Error("El producto ya no está disponible.");
+    if(!Number.isFinite(amount)||amount===0)throw new Error("La cantidad debe ser mayor que cero.");
+    if(product.stock+amount<0)throw new Error(`Solo hay ${product.stock} unidades disponibles.`);
+    const before=product.stock;product.stock+=amount;product.daysLeft=product.velocity>0?Math.ceil(product.stock/product.velocity):999;
+    const movement={id:`M-${Date.now()}`,productId,delta:amount,before,after:product.stock,reason:String(reason||"Ajuste manual"),actorId:actor?.id||"demo-admin",actorName:actor?.name||"Administrador",date:new Date().toISOString()};
+    this.state.movements.unshift(movement);this.log(amount>0?"Entrada de inventario":"Salida de inventario",`${product.name} · ${Math.abs(amount)} un. · ${movement.reason}`);this.save();return movement;
+  }
   addToShopping(productId,qty){
     const item=this.state.shopping.find(entry=>entry.productId===productId);
     if(item) item.qty=Math.max(item.qty,Number(qty)); else this.state.shopping.push({productId,qty:Number(qty)});
@@ -62,10 +85,12 @@ export class DemoStore {
     customer.debt=Math.max(0,customer.debt-Number(amount)); customer.lastPayment=new Date().toISOString().slice(0,10); customer.risk=customer.debt>customer.limit*.8?"Cobrar hoy":"Al día"; customer.color=customer.debt>customer.limit*.8?"red":"green";
     this.log("Abono registrado",`${customer.name} · S/ ${Number(amount).toFixed(2)}`); this.save();
   }
-  createSale({items,method,customerId}){
+  createSale({items,method,customerId,seller}){
+    const unavailable=items.find(item=>{const product=this.state.products.find(p=>p.id===item.id);return !product||product.stock<item.qty;});
+    if(unavailable)throw new Error(`No hay stock suficiente de ${unavailable.short}.`);
     const total=items.reduce((sum,item)=>sum+this.unitPrice(item)*item.qty,0);
     const margin=items.reduce((sum,item)=>sum+(this.unitPrice(item)-item.cost)*item.qty,0);
-    const sale={id:`V-${2059+this.state.sales.length-seedSales.length}`,date:new Date().toISOString(),method,total,margin,customerId:method==="Fiado"?customerId:null,items:items.map(item=>({id:item.id,name:item.short,qty:item.qty,price:this.unitPrice(item)}))};
+    const sale={id:`V-${2059+this.state.sales.length-seedSales.length}`,date:new Date().toISOString(),method,total,margin,customerId:method==="Fiado"?customerId:null,sellerId:seller?.id||"demo-user",sellerName:seller?.name||"Usuario demo",items:items.map(item=>({id:item.id,name:item.short,qty:item.qty,price:this.unitPrice(item)}))};
     items.forEach(item=>{const product=this.state.products.find(p=>p.id===item.id); if(product)product.stock=Math.max(0,product.stock-item.qty);});
     if(method==="Fiado"){const customer=this.state.customers.find(item=>item.id===customerId); if(customer){customer.debt+=total;customer.lastPurchase=new Date().toISOString().slice(0,10);}}
     this.state.sales.unshift(sale); this.log("Venta registrada",`${sale.id} · S/ ${total.toFixed(2)}`); this.save(); return sale;

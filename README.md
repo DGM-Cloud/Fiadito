@@ -6,11 +6,13 @@ Demo frontend para bodegas y pequeños negocios peruanos. Convierte datos simula
 
 ## Alcance del demo
 
-Esta entrega es **solo frontend**. No incluye backend, base de datos, autenticación real, sincronización entre dispositivos ni modelos predictivos en producción. Los datos viven en `localStorage` y se pueden restablecer desde la interfaz.
+Esta entrega es **solo frontend**. No incluye backend, base de datos, autenticación real, sincronización entre dispositivos ni modelos predictivos en producción. Los datos viven en `localStorage` y se pueden restablecer desde la interfaz. La selección de perfiles demuestra permisos de interfaz, pero no debe tratarse como seguridad real: esa autorización deberá validarse en el backend.
 
 El demo incluye:
 
 - Ventas rápidas con efectivo, Yape, Plin y fiado.
+- Acceso demo separado para administrador y vendedor, con navegación y acciones según el rol.
+- Administración local de productos y ajustes de stock con responsable, motivo y saldo resultante.
 - Precios por volumen, incluido el caso de panetones por caja de 12.
 - Historial y resumen por productos, métodos de pago, día y hora.
 - Inventario con costo, precio, margen, categorías, lotes, vencimientos, baja rotación y “plata dormida”.
@@ -20,6 +22,13 @@ El demo incluye:
 - Fiados/Credit Intelligence con clientes, deudas, abonos y sugerencias de cobranza.
 - Fiadito Copilot con consultas simuladas en lenguaje natural y voz.
 - Lista de compra inteligente, creación de promociones y registro de pagos con datos locales.
+
+## Perfiles de la demo
+
+- **Carlos — Administrador:** puede crear productos, registrar entradas o salidas, consultar costos y usar los módulos administrativos.
+- **Rosa — Vendedora:** puede registrar ventas, revisar el historial y consultar existencias sin ver costos ni modificar inventario.
+
+El perfil se elige al entrar y se puede cambiar desde el botón del usuario. No se utilizan contraseñas porque sigue siendo una demostración frontend.
 
 ## Ejecutar localmente
 
